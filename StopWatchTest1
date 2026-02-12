@@ -1,0 +1,81 @@
+byte segmentsPins[] = {2,3,4,5,6,7,8}; // A,B,C,D,E,F,G (physical pins)
+// But in reality: A,B,C,D,E,G,F (F and G are swapped)
+
+byte digitPins[] = {10,11,12,13};
+
+// CORRECTED patterns with F and G swapped!
+// Original order was: A,B,C,D,E,F,G
+// Your actual order:  A,B,C,D,E,G,F
+// So we swap the last two values in each pattern
+
+byte numbers[10][7] = {
+  {1,1,1,1,1,1,0}, // 0
+  {0,1,1,0,0,0,0}, // 1
+  {1,1,0,1,1,0,1}, // 2
+  {1,1,1,1,0,0,1}, // 3
+  {0,1,1,0,0,1,1}, // 4
+  {1,0,1,1,0,1,1}, // 5
+  {1,0,1,1,1,1,1}, // 6
+  {1,1,1,0,0,0,0}, // 7
+  {1,1,1,1,1,1,1}, // 8
+  {1,1,1,1,0,1,1}  // 9
+};
+
+int displayA[4] = {1,0,0,4};
+int displayB[4] = {5,6,7,8};
+
+bool toggleState = false;
+unsigned long lastSwitch = 0;
+
+void setup() {
+  for (byte i=0;i<7;i++) {
+    pinMode(segmentsPins[i], OUTPUT);
+    digitalWrite(segmentsPins[i], LOW);
+  }
+  for (byte i=0;i<4;i++) {
+    pinMode(digitPins[i], OUTPUT);
+    digitalWrite(digitPins[i], HIGH);
+  }
+}
+
+void showDigit(byte digit, int number) {
+  // Turn off all digits
+  for (byte i=0;i<4;i++) digitalWrite(digitPins[i], HIGH);
+  
+  // Set segments with swapped F/G
+  for (byte s=0;s<7;s++) {
+    digitalWrite(segmentsPins[s], numbers[number][s]);
+  }
+  
+  // Turn on this digit
+  digitalWrite(digitPins[digit], LOW);
+}
+
+unsigned long startTime = 0;
+
+void loop() {
+
+  // Start stopwatch once
+  if (startTime == 0) {
+    startTime = millis();
+  }
+
+  // Calculate elapsed time
+  unsigned long elapsed = (millis() - startTime) / 1000;
+
+  int minutes = (elapsed / 60) % 100;
+  int seconds = elapsed % 60;
+
+  int digits[4];
+  digits[0] = minutes / 10;
+  digits[1] = minutes % 10;
+  digits[2] = seconds / 10;
+  digits[3] = seconds % 10;
+
+  // Refresh display (multiplexing)
+  for (byte d = 0; d < 4; d++) {
+    showDigit(d, digits[d]);
+    delayMicroseconds(1500);
+  }
+}
+  
