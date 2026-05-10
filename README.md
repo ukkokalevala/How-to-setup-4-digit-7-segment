@@ -1,3 +1,13 @@
+You're seeing 8.8.8.8. (all segments + decimal points lit) on all 4 digits.
+
+That means:
+
+All segment pins (A–DP) are wired correctly
+
+All digit pins (DIG1–DIG4) are wired correctly
+
+Your code's multiplexing is working
+
 5461AS-1 = Common Cathode
 COM pins go LOW (GND) to enable a digit
 Segment pins go HIGH through resistors
